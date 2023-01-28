@@ -17,7 +17,8 @@ import static com.codeborne.selenide.Selenide.open;
 
 public class OrderCardDeliveryTest {
     @BeforeEach
-    void setup(){ open("http://localhost:9999/");
+    void setup() {
+        open("http://localhost:9999/");
     }
 
     @Test
@@ -32,7 +33,7 @@ public class OrderCardDeliveryTest {
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
         $("[data-test-id='date'] input").setValue(firstMeetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
-        $("[data-test-id='phone'] input").setValue("+79201666666");//метод генератор
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id='agreement']").click();
         $("button.button").click();
         $(byText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
@@ -41,13 +42,13 @@ public class OrderCardDeliveryTest {
                 .shouldBe(visible);
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
         $("[data-test-id='date'] input").setValue(secondMeetingDate);
+        $("button.button").click();
+        $("[data-test-id='replan-notification'].notification__content")
+                .shouldHave(exactText("У вас уже запланирована встреча на другую дату. Перепланировать?"))
+                .shouldBe(visible);
         $(byText("Перепланировать")).click();
-
-
-
-
-
-
-
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(exactText("Встреча успешно забронирована на " + secondMeetingDate))
+                .shouldBe(visible);
     }
 }
